@@ -25,16 +25,13 @@ class Listener(StreamListener):
     def on_data(self, data):
         decoded = json.loads(data)
 
-        # we need both text and coords
-        if "coordinates" in decoded and "text" in decoded:
-            if decoded["coordinates"] and decoded["text"]:
-                coordinates = decoded["coordinates"]
+        if "text" in decoded:
+            if decoded["text"]:
                 text = decoded["text"]
-                message = json.dumps({"coordinates": coordinates, "text": text})
 
-                channel.basic_publish(exchange='', routing_key=cfg.sentiment.QUEUE_TOPIC, body=message)
+                channel.basic_publish(exchange='', routing_key=cfg.sentiment.QUEUE_TOPIC, body=json.dumps({"text": text}))
 
-                print 'SENT to worker: ' + message
+                print 'SENT to consumer: ' + json.dumps({"text": text})
 
         return True
 
@@ -51,5 +48,5 @@ if __name__ == '__main__':
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, l)
 
-    # get english tweets with #caltrain hashtags
+    # get english tweets with #caltrain hashtags and more
     stream.filter(languages=["en"], track=["caltrain"])

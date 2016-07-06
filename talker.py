@@ -4,7 +4,6 @@ import json
 import operator
 from datetime import datetime
 
-
 # import shared config
 f = file('config.conf')
 cfg = config.Config(f)
